@@ -8,7 +8,7 @@ A lightweight wrapper around [mcp-swift-sdk](https://github.com/gsabran/mcp-swif
 
 ## What is MCP?
 
-[The Model Context Protocol](https://github.com/modelcontextprotocol) (MCP) is an open protocol that enables AI models to securely interact with local and remote resources through standardized server implementations. MCP allows AI models to:
+The Model Context Protocol (MCP) is an open protocol that enables AI models to securely interact with local and remote resources through standardized server implementations. MCP allows AI models to:
 
 - Discover available tools
 - Call these tools with parameters
@@ -21,6 +21,23 @@ By using MCP, developers can create applications that give AI models controlled 
 - macOS 14.0+
 - Swift 6.0+
 - Xcode 16.0+
+- [npm/npx](https://www.npmjs.com/package/npx) installed on your system
+
+### Installing npm/npx
+
+`npx` is included with npm since npm version 5.2.0. To install npm, you can:
+
+1. Install via Homebrew:
+   ```bash
+   brew install node
+   ```
+
+2. Or download and install directly from the [Node.js website](https://nodejs.org/)
+
+After installation, verify it's working:
+```bash
+npx --version
+```
 
 ## Installation
 
@@ -39,16 +56,17 @@ Or add it directly in Xcode:
 2. Enter the GitHub URL: `https://github.com/jamesrochabrun/MCPSwiftWrapper`
 3. Click Add Package
 
+⚠️ **Important**: When building a client macOS app, you need to disable app sandboxing. This is because the app will need to run the processes for each MCP server. You can disable sandboxing in your app's entitlements file.
+
 ## Getting Started
 
 ### Initializing a Client
 
-To use MCP tools, you need to initialize an MCP client that connects to a tool provider. The example below shows how to create a GitHub MCP client:
+To use MCP tools, you need to initialize an MCP client that connects to a tool provider. The example below shows one way to create a GitHub MCP client:
 
 ```swift
 import MCPSwiftWrapper
 import Foundation
-import SwiftUI
 
 final class GithubMCPClient {
     init() {
@@ -89,64 +107,53 @@ final class GithubMCPClient {
 ### Getting Tools for Anthropic
 
 ```swift
-// Create an Anthropic service
-let service = AnthropicServiceFactory.service(
-    apiKey: "your-api-key", 
-    betaHeaders: nil, 
-    debugEnabled: true
-)
-
-// Initialize the chat manager
-let chatManager = AnthropicNonStreamManager(service: service)
-
 // Initialize an MCP client
 let githubClient = GithubMCPClient()
 
-// Get the MCP client
+// Get the MCP client and fetch available tools
 if let client = try await githubClient.getClientAsync() {
     // Get available tools from MCP and convert them to Anthropic format
     let tools = try await client.anthropicTools()
     
-    // Now you can use these tools with Anthropic API
-    let parameters = AnthropicParameters(
-        model: .claude37Sonnet,
-        messages: messages,
-        maxTokens: 10000,
-        tools: tools
-    )
-    
-    // Make the request to Claude
-    let response = try await service.createMessage(parameters)
+    // Now you can use these tools with Anthropic's API
+    // Pass them in your AnthropicParameters when making requests
 }
 ```
 
 ### Handling Tool Calls for Anthropic
 
-When Claude requests to use a tool, you can handle it like this:
+When Anthropic's models request to use a tool, you need to handle the tool use and call the tool via MCP:
 
 ```swift
-// When a tool use is detected in the response content
+// When processing a message from Anthropic that contains tool usage
+switch contentItem {
+case .text(let text, _):
+    // Handle regular text response...
+    
 case .toolUse(let tool):
     print("Tool use detected - Name: \(tool.name), ID: \(tool.id)")
-    
+
+    // Update UI or state to show tool use
+    // ...
+
     // Call the tool via MCP
-    let toolResponse = await mcpClient?.anthropicCallTool(
-        name: tool.name, 
-        input: tool.input, 
-        debug: true
+    let toolResponse = await mcpClient.anthropicCallTool(
+        name: tool.name,       // Name of the tool from Anthropic's response
+        input: tool.input,     // Input parameters from Anthropic's request
+        debug: true            // Enable debug logging
     )
     
-    // Add tool result to conversation
     if let toolResult = toolResponse {
-        // Add the tool result to the conversation
+        // Add the tool result back to the conversation
         anthropicMessages.append(AnthropicMessage(
             role: .user,
             content: .list([.toolResult(tool.id, toolResult)])
         ))
         
         // Continue the conversation with the tool result
-        try await continueConversation(tools: tools)
+        // ...
     }
+}
 ```
 
 ## Usage with OpenAI
@@ -154,42 +161,25 @@ case .toolUse(let tool):
 ### Getting Tools for OpenAI
 
 ```swift
-// Create an OpenAI service
-let openAIService = OpenAIServiceFactory.service(
-    apiKey: "your-api-key", 
-    debugEnabled: true
-)
-
-// Initialize the chat manager
-let chatManager = OpenAIChatNonStreamManager(service: openAIService)
-
 // Initialize an MCP client
 let githubClient = GithubMCPClient()
 
-// Get the MCP client
+// Get the MCP client and fetch available tools
 if let client = try await githubClient.getClientAsync() {
     // Get available tools from MCP and convert them to OpenAI format
     let tools = try await client.openAITools()
     
-    // Now you can use these tools with OpenAI API
-    let parameters = OpenAIParameters(
-        messages: messages,
-        model: .gpt4o,
-        toolChoice: .auto,
-        tools: tools
-    )
-    
-    // Make the request to OpenAI
-    let response = try await service.startChat(parameters: parameters)
+    // Now you can use these tools with OpenAI's API
+    // Pass them in your OpenAIParameters when making requests
 }
 ```
 
 ### Handling Tool Calls for OpenAI
 
-When GPT requests to use a tool, you can handle it like this:
+When OpenAI models request to use a tool, you need to extract the tool information and call it via MCP:
 
 ```swift
-// Process tool calls if any
+// If the message contains tool calls
 if let toolCalls = message.toolCalls, !toolCalls.isEmpty {
     for toolCall in toolCalls {
         let function = toolCall.function
@@ -215,12 +205,11 @@ if let toolCalls = message.toolCalls, !toolCalls.isEmpty {
 
         // Call tool via MCP
         let toolResponse = await mcpClient.openAICallTool(
-            name: name, 
-            input: arguments, 
-            debug: true
+            name: name,        // Name of the tool from OpenAI's response
+            input: arguments,  // Parsed arguments from OpenAI's request
+            debug: true        // Enable debug logging
         )
         
-        // Add tool result to conversation
         if let toolResult = toolResponse {
             // Add the tool result as a tool message
             openAIMessages.append(OpenAIMessage(
@@ -230,7 +219,7 @@ if let toolCalls = message.toolCalls, !toolCalls.isEmpty {
             ))
             
             // Continue the conversation with the tool result
-            try await continueConversation(tools: tools)
+            // ...
         }
     }
 }
