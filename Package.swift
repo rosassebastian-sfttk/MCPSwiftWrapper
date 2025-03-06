@@ -6,7 +6,6 @@ import PackageDescription
 let package = Package(
     name: "MCPSwiftWrapper",
     platforms: [
-      .iOS(.v15),
       .macOS(.v14),
     ],
     products: [
@@ -16,7 +15,7 @@ let package = Package(
             targets: ["MCPSwiftWrapper"]),
     ],
     dependencies: [
-      .package(url: "https://github.com/gsabran/mcp-swift-sdk", branch: "main"),
+      .package(url: "https://github.com/gsabran/mcp-swift-sdk", from: "0.2.2"),
       .package(url: "https://github.com/jamesrochabrun/SwiftOpenAI", from: "4.0.3"),
       .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", from: "2.1.2"),
     ],

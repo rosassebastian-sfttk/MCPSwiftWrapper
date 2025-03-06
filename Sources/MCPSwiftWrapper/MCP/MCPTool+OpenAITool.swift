@@ -269,7 +269,7 @@ extension Array where Element == MCPInterface.Tool {
    /// Converts an array of MCP interface tools to an array of SwiftOpenAI tools.
    ///
    /// - Returns: An array of SwiftOpenAI.Tool objects
-   public func toOpenAITools() -> [SwiftOpenAI.ChatCompletionParameters.Tool] {
+   public func toOpenAITools() -> [OpenAITool] {
       map { $0.toOpenAITool() }
    }
 }
@@ -281,12 +281,12 @@ extension Array where Element == MCPInterface.Tool {
 /// 2. Execute tools with provided parameters and handle their responses
 public extension MCPClient {
    
-    func tools() async throws -> [SwiftOpenAI.ChatCompletionParameters.Tool] {
+    func openAITools() async throws -> [OpenAITool] {
       let tools = await tools
       return try tools.value.get().map { $0.toOpenAITool() }
    }
    
-    func callTool(
+    func openAICallTool(
       name: String,
       input: [String: Any],
       debug: Bool)
