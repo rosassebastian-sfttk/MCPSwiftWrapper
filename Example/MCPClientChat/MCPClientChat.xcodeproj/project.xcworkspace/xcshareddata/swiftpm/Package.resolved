@@ -1,5 +1,5 @@
 {
-  "originHash" : "f89d38d8de81ad0024433015c4ba4ef9c4c0f510ffd591385a6f128ac1281032",
+  "originHash" : "444a03a4064f99ca41c9101ab74dac980005cd3abc278b99e6af0d9bbc255a64",
   "pins" : [
     {
       "identity" : "jsonrpc",
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftAnthropic",
       "state" : {
-        "branch" : "main",
-        "revision" : "e71ff4df0a2ab4e85fb492f02322980858a8157c"
+        "revision" : "e71ff4df0a2ab4e85fb492f02322980858a8157c",
+        "version" : "2.1.2"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftOpenAI",
       "state" : {
-        "branch" : "main",
-        "revision" : "8bb0ffc621b27f7cb40d49bb1166ee19862224b4"
+        "revision" : "8bb0ffc621b27f7cb40d49bb1166ee19862224b4",
+        "version" : "4.0.3"
       }
     }
   ],

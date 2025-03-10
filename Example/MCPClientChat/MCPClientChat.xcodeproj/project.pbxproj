@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7BDD62DB2D764B3D00E18088 /* SwiftAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 7BDD62DA2D764B3D00E18088 /* SwiftAnthropic */; };
-		7BDD644F2D7811BA00E18088 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7BDD644E2D7811BA00E18088 /* SwiftOpenAI */; };
 		7BF7B7872D797B080085607F /* MCPSwiftWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 7BF7B7862D797B080085607F /* MCPSwiftWrapper */; };
 /* End PBXBuildFile section */
 
@@ -58,9 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BDD644F2D7811BA00E18088 /* SwiftOpenAI in Frameworks */,
 				7BF7B7872D797B080085607F /* MCPSwiftWrapper in Frameworks */,
-				7BDD62DB2D764B3D00E18088 /* SwiftAnthropic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,8 +125,6 @@
 			);
 			name = MCPClientChat;
 			packageProductDependencies = (
-				7BDD62DA2D764B3D00E18088 /* SwiftAnthropic */,
-				7BDD644E2D7811BA00E18088 /* SwiftOpenAI */,
 				7BF7B7862D797B080085607F /* MCPSwiftWrapper */,
 			);
 			productName = MCPClientChat;
@@ -216,8 +210,6 @@
 			mainGroup = 7BDD62A02D764A4A00E18088;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				7BDD62D72D764ADA00E18088 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */,
-				7BDD644D2D7811B300E18088 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
 				7BF7B7852D797ACC0085607F /* XCLocalSwiftPackageReference "../../../MCPSwiftWrapper" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -582,36 +574,7 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		7BDD62D72D764ADA00E18088 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jamesrochabrun/SwiftAnthropic";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		7BDD644D2D7811B300E18088 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jamesrochabrun/SwiftOpenAI";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		7BDD62DA2D764B3D00E18088 /* SwiftAnthropic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7BDD62D72D764ADA00E18088 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */;
-			productName = SwiftAnthropic;
-		};
-		7BDD644E2D7811BA00E18088 /* SwiftOpenAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7BDD644D2D7811B300E18088 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
-			productName = SwiftOpenAI;
-		};
 		7BF7B7862D797B080085607F /* MCPSwiftWrapper */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7BF7B7852D797ACC0085607F /* XCLocalSwiftPackageReference "../../../MCPSwiftWrapper" */;
