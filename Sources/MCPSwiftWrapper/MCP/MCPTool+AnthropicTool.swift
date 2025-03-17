@@ -26,7 +26,7 @@ public extension MCPInterface.Tool {
    ///   functionality as the original MCP tool.
    func toAnthropicTool() -> AnthropicTool {
       // Convert the JSON to SwiftAnthropic.JSONSchema
-      let anthropicInputSchema: AnthropicTool.JSONSchema?
+      let anthropicInputSchema: SwiftAnthropic.JSONSchema?
       
       switch inputSchema {
       case .object(let value):
@@ -36,7 +36,7 @@ public extension MCPInterface.Tool {
          anthropicInputSchema = nil
       }
       
-      return AnthropicTool(
+      return AnthropicTool.function(
          name: name,
          description: description,
          inputSchema: anthropicInputSchema,
@@ -52,18 +52,18 @@ public extension MCPInterface.Tool {
    ///
    /// - Parameter jsonObject: Dictionary containing MCP JSON schema properties
    /// - Returns: An equivalent SwiftAnthropic JSONSchema object, or nil if conversion fails
-   private func convertToAnthropicJSONSchema(from jsonObject: [String: MCPInterface.JSON.Value]) -> AnthropicTool.JSONSchema?
+   private func convertToAnthropicJSONSchema(from jsonObject: [String: MCPInterface.JSON.Value]) -> SwiftAnthropic.JSONSchema?
    {
       guard
          let typeValue = jsonObject["type"],
          case .string(let typeString) = typeValue,
-         let jsonType = SwiftAnthropic.MessageParameter.Tool.JSONSchema.JSONType(rawValue: typeString)
+         let jsonType = SwiftAnthropic.JSONSchema.JSONType(rawValue: typeString)
       else {
          return nil
       }
       
       // Extract properties
-      var properties: [String: AnthropicTool.JSONSchema.Property]? = nil
+      var properties: [String: SwiftAnthropic.JSONSchema.Property]? = nil
       if
          let propertiesValue = jsonObject["properties"],
          case .object(let propertiesObject) = propertiesValue
@@ -152,7 +152,7 @@ public extension MCPInterface.Tool {
          maximum = Int(maximumDouble)
       }
       
-      return AnthropicTool.JSONSchema(
+      return SwiftAnthropic.JSONSchema(
          type: jsonType,
          properties: properties,
          required: required,
@@ -171,12 +171,12 @@ public extension MCPInterface.Tool {
    ///
    /// - Parameter propertyObject: Dictionary containing MCP property schema
    /// - Returns: An equivalent SwiftAnthropic Property object, or nil if conversion fails
-   private func convertToAnthropicProperty(from propertyObject: [String: MCPInterface.JSON.Value]) -> AnthropicTool.JSONSchema.Property?
+   private func convertToAnthropicProperty(from propertyObject: [String: MCPInterface.JSON.Value]) -> SwiftAnthropic.JSONSchema.Property?
    {
       guard
          let typeValue = propertyObject["type"],
          case .string(let typeString) = typeValue,
-         let jsonType = AnthropicTool.JSONSchema.JSONType(rawValue: typeString)
+         let jsonType = SwiftAnthropic.JSONSchema.JSONType(rawValue: typeString)
       else {
          return nil
       }
@@ -200,7 +200,7 @@ public extension MCPInterface.Tool {
       }
       
       // Extract items
-      var items: AnthropicTool.JSONSchema.Items? = nil
+      var items: SwiftAnthropic.JSONSchema.Items? = nil
       if
          let itemsValue = propertyObject["items"],
          case .object(let itemsObject) = itemsValue
@@ -308,7 +308,7 @@ public extension MCPInterface.Tool {
          uniqueItems = uniqueItemsBool
       }
       
-      return AnthropicTool.JSONSchema.Property(
+      return SwiftAnthropic.JSONSchema.Property(
          type: jsonType,
          description: description,
          format: format,
@@ -332,18 +332,18 @@ public extension MCPInterface.Tool {
    ///
    /// - Parameter itemsObject: Dictionary containing MCP items schema
    /// - Returns: An equivalent SwiftAnthropic Items object, or nil if conversion fails
-   private func convertToAnthropicItems(from itemsObject: [String: MCPInterface.JSON.Value]) -> AnthropicTool.JSONSchema.Items?
+   private func convertToAnthropicItems(from itemsObject: [String: MCPInterface.JSON.Value]) -> SwiftAnthropic.JSONSchema.Items?
    {
       guard
          let typeValue = itemsObject["type"],
          case .string(let typeString) = typeValue,
-         let jsonType = AnthropicTool.JSONSchema.JSONType(rawValue: typeString)
+         let jsonType = SwiftAnthropic.JSONSchema.JSONType(rawValue: typeString)
       else {
          return nil
       }
       
       // Extract properties
-      var properties: [String: AnthropicTool.JSONSchema.Property]? = nil
+      var properties: [String: SwiftAnthropic.JSONSchema.Property]? = nil
       if
          let propertiesValue = itemsObject["properties"],
          case .object(let propertiesObject) = propertiesValue
@@ -445,7 +445,7 @@ public extension MCPInterface.Tool {
          uniqueItems = uniqueItemsBool
       }
       
-      return AnthropicTool.JSONSchema.Items(
+      return SwiftAnthropic.JSONSchema.Items(
          type: jsonType,
          properties: properties,
          pattern: pattern,
