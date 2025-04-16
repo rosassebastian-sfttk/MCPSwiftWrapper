@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
       .package(url: "https://github.com/gsabran/mcp-swift-sdk", from: "0.2.2"),
-      .package(url: "https://github.com/rosassebastian-sfttk/SwiftOpenAI.git", from: "4.0.3"),
+      .package(url: "https://github.com/rosassebastian-sfttk/SwiftOpenAI.git", branch: "main"),
       .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", from: "2.1.2"),
     ],
     targets: [
