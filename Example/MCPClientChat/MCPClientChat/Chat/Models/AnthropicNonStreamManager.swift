@@ -37,10 +37,14 @@ final class AnthropicNonStreamManager: ChatManager {
 
   func updateClient(_ client: MCPClient) {
     mcpClient = client
+    // Invalidate cache when client changes
+    invalidateToolsCache()
   }
 
   /// Send a new message to Claude and get the complete response
   func send(message: ChatMessage) {
+    messageStartTime = Date()
+    print("⏰ Message processing started at: \(messageStartTime!)")
     messages.append(message)
     processUserMessage(prompt: message.text)
   }
@@ -61,6 +65,13 @@ final class AnthropicNonStreamManager: ChatManager {
     task?.cancel()
     task = nil
   }
+  
+  /// Invalidate tools cache (useful when client changes)
+  private func invalidateToolsCache() {
+    print("🟡 Invalidating tools cache")
+    cachedTools = nil
+    toolsCacheTimestamp = nil
+  }
 
   // MARK: Private
 
@@ -74,6 +85,18 @@ final class AnthropicNonStreamManager: ChatManager {
   private var task: Task<Void, Never>? = nil
 
   private var mcpClient: MCPClient?
+  
+  /// Cached tools to avoid fetching on every message
+  private var cachedTools: [AnthropicTool]?
+  
+  /// Last time tools were fetched
+  private var toolsCacheTimestamp: Date?
+  
+  /// Cache expiry time (5 minutes)
+  private let toolsCacheExpiryInterval: TimeInterval = 300
+  
+  /// Track message processing start time for performance metrics
+  private var messageStartTime: Date?
 
   private func processUserMessage(prompt: String) {
     guard let mcpClient else {
@@ -91,11 +114,17 @@ final class AnthropicNonStreamManager: ChatManager {
       do {
         isLoading = true
 
-        // Get available tools from MCP
-        let tools = try await mcpClient.anthropicTools()
+        // Get available tools from MCP (with caching)
+        let tools = try await getCachedTools()
 
         // Send request and process response
         try await continueConversation(tools: tools)
+
+        // Log completion time
+        if let startTime = messageStartTime {
+          let duration = Date().timeIntervalSince(startTime)
+          print("⚡ Message processing completed in: \(String(format: "%.2f", duration))s")
+        }
 
         isLoading = false
       } catch {
@@ -106,6 +135,12 @@ final class AnthropicNonStreamManager: ChatManager {
           last.isWaitingForFirstText = false
           last.text = "Sorry, there was an error: \(error.localizedDescription)"
           messages.append(last)
+        }
+
+        // Log error completion time
+        if let startTime = messageStartTime {
+          let duration = Date().timeIntervalSince(startTime)
+          print("⚡ Message processing failed after: \(String(format: "%.2f", duration))s")
         }
 
         isLoading = false
@@ -180,5 +215,30 @@ final class AnthropicNonStreamManager: ChatManager {
         break
       }
     }
+  }
+  
+  /// Get tools with caching mechanism
+  private func getCachedTools() async throws -> [AnthropicTool] {
+    guard let mcpClient else {
+      throw NSError(domain: "AnthropicChat", code: 1, userInfo: [NSLocalizedDescriptionKey: "mcpClient is nil"])
+    }
+    
+    // Check if we have cached tools and they're still valid
+    if let cachedTools = cachedTools,
+       let cacheTimestamp = toolsCacheTimestamp,
+       Date().timeIntervalSince(cacheTimestamp) < toolsCacheExpiryInterval {
+      print("🟡 Using cached tools (\(cachedTools.count) tools)")
+      return cachedTools
+    }
+    
+    print("🟡 Fetching fresh tools from MCP client")
+    let tools = try await mcpClient.anthropicTools()
+    
+    // Cache the tools
+    cachedTools = tools
+    toolsCacheTimestamp = Date()
+    
+    print("🟡 Cached \(tools.count) tools")
+    return tools
   }
 }

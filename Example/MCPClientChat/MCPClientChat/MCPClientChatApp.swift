@@ -16,17 +16,22 @@ struct MCPClientChatApp: App {
   init() {
     let service = AnthropicServiceFactory.service(apiKey: "", betaHeaders: nil, debugEnabled: true)
 
-    let initialManager = AnthropicNonStreamManager(service: service)
+    // Use streaming manager for better real-time experience
+    let initialManager = AnthropicStreamManager(service: service)
 
     _chatManager = State(initialValue: initialManager)
 
-    // Uncomment this and comment the above for OpenAI Demo
+    // Uncomment this and comment the above for OpenAI Streaming Demo
 
     //      let openAIService = OpenAIServiceFactory.service(apiKey: "", debugEnabled: true)
     //
-    //      let openAIChatNonStreamManager = OpenAIChatNonStreamManager(service: openAIService)
+    //      let openAIStreamManager = OpenAIChatStreamManager(service: openAIService)
     //
-    //      _chatManager = State(initialValue: openAIChatNonStreamManager)
+    //      _chatManager = State(initialValue: openAIStreamManager)
+    
+    // Non-streaming versions (for comparison):
+    // let nonStreamManager = AnthropicNonStreamManager(service: service)
+    // let openAINonStreamManager = OpenAIChatNonStreamManager(service: openAIService)
   }
 
   // MARK: Internal
