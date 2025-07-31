@@ -3,6 +3,7 @@
 @_exported import SwiftAnthropic
 @_exported import SwiftOpenAI
 @_exported import MCPClient
+@_exported import Splash
 
 public typealias AnthropicMessage = SwiftAnthropic.MessageParameter.Message
 public typealias AnthropicTool = SwiftAnthropic.MessageParameter.Tool

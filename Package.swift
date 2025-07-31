@@ -18,6 +18,7 @@ let package = Package(
       .package(url: "https://github.com/gsabran/mcp-swift-sdk", from: "0.2.2"),
       .package(url: "https://github.com/rosassebastian-sfttk/SwiftOpenAI.git", branch: "main"),
       .package(url: "https://github.com/jamesrochabrun/SwiftAnthropic", from: "2.1.2"),
+      .package(url: "https://github.com/JohnSundell/Splash", from: "0.16.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -28,6 +29,7 @@ let package = Package(
                .product(name: "SwiftOpenAI", package: "SwiftOpenAI"),
                .product(name: "SwiftAnthropic", package: "SwiftAnthropic"),
               .product(name: "MCPClient", package: "mcp-swift-sdk"),
+              .product(name: "Splash", package: "Splash"),
             ]),
         .testTarget(
             name: "MCPSwiftWrapperTests",

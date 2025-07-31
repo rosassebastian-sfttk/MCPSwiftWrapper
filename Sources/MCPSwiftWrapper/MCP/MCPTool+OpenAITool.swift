@@ -328,14 +328,16 @@ public extension MCPClient {
                if debug {
                   print("   Error: \(errorText)")
                }
+               return "⛔️ Error calling tool: \(errorText)"
             }
-            return nil
+            return "⛔️ Error calling tool: Tool execution failed with no error details"
          }
       } catch {
+         let errorMessage = "⛔️ Error calling tool: \(error)"
          if debug {
-            print("⛔️ Error calling tool: \(error)")
+            print(errorMessage)
          }
-         return nil
+         return errorMessage
       }
    }
 }
